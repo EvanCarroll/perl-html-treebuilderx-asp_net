@@ -9,7 +9,7 @@ use HTTP::Request::Form;
 use HTML::Element;
 use Carp;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use mro 'c3';
 with 'MooseX::Traits';
