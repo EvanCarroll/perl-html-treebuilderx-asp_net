@@ -1,10 +1,11 @@
 package HTML::TreeBuilderX::ASP_NET;
 use 5.010;
-use Moose;
 use strict;
 use warnings;
 
-use Moose::Util::TypeConstraints;
+
+use Moose;
+use HTML::TreeBuilderX::ASP_NET::Types qw( htmlAnchorTag htmlFormTag );
 use HTTP::Request::Form;
 use HTML::Element;
 use Carp;
@@ -19,22 +20,6 @@ has '+_trait_namespace' => (
 	, default => 'HTML::TreeBuilderX::ASP_NET::Roles'
 );
 
-subtype 'htmlAnchorTag'
-	=> from 'HTML::Element'
-	=> where {
-		blessed $_ eq 'HTML::Element'
-		&& $_->tag eq 'a'
-	}
-;
-
-subtype 'htmlFormTag'
-	=> from 'HTML::Element'
-	=> where {
-		blessed $_ eq 'HTML::Element'
-		&& $_->tag eq 'form'
-	}
-;
-
 has 'hrf' => (
 	isa          => 'HTTP::Request::Form'
 	, is         => 'ro'
@@ -43,13 +28,13 @@ has 'hrf' => (
 );
 
 has 'element' => (
-	isa         => 'htmlAnchorTag'
+	isa         => htmlAnchorTag
 	, is        => 'ro'
 	, predicate => 'has_element'
 );
 
 has 'form' => (
-	isa          => 'htmlFormTag'
+	isa          => htmlFormTag
 	, is         => 'ro'
 	, lazy_build => 1
 );
