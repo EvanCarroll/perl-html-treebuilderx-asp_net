@@ -1,5 +1,9 @@
 Revision history for HTML-TreeBuilderX-ASP_NET
 
+0.09    2009-08-26
+        Fix #47300 - Caused by upstream Moose breakage
+        - Solution use MX::Types
+
 0.08    2009-01-29
         More Kwalitee, now with 5.10 require explicit
 
