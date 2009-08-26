@@ -1,0 +1,27 @@
+---
+abstract: 'Scrape ASP.NET/VB.NET sites which utilize Javascript POST-backs.'
+author:
+  - 'Evan Carroll <me@evancarroll.com>'
+build_requires:
+  Test::More: 0
+distribution_type: module
+generated_by: 'Module::Install version 0.77'
+license: perl
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: HTML-TreeBuilderX-ASP_NET
+no_index:
+  directory:
+    - inc
+    - t
+requires:
+  Class::MOP: 0
+  HTML::TreeBuilder: 0
+  HTTP::Request::Form: 0
+  Moose: 0
+  MooseX::Traits: 0
+  perl: 5.01
+resources:
+  license: http://dev.perl.org/licenses/
+version: 0.08
