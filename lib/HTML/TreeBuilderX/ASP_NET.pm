@@ -9,7 +9,7 @@ use HTTP::Request::Form;
 use HTML::Element;
 use Carp;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use mro 'c3';
 with 'MooseX::Traits';
@@ -39,7 +39,7 @@ has 'form' => (
 );
 
 has 'eventTriggerArgument' => (
-	isa          => 'HashRef'
+	isa          => 'Maybe[HashRef]'
 	, is         => 'ro'
 	, lazy_build => 1
 );
@@ -47,6 +47,8 @@ has 'eventTriggerArgument' => (
 has 'baseURL' => ( isa => 'Maybe[URI]', is => 'ro' );
 
 has 'debug' => ( isa => 'Bool', is => 'ro', default => 0 );
+
+has '_function' => ( isa => 'Str', is => 'ro', default => '__doPostBack' );
 
 sub httpRequest {
 	my ( $self, @args ) = @_;
@@ -62,7 +64,7 @@ sub _build_eventTriggerArgument {
 		unless $self->has_element
 	;
 
-	parseDoPostBack( $self->element );
+	parseDoPostBack( $self->element , $self->_function );
 
 }
 
@@ -111,18 +113,25 @@ sub _build_hrf {
 ## END Moose, the other two funcs are helpers
 ##
 sub parseDoPostBack {
-	my ($element) = @_;
+	my ($element, $func_name) = @_;
 
-	(
-		$element->attr('href')
-		// $element->attr('onchange')
-	)  =~  /__doPostBack\((.*)\)/;
+	$func_name //= '__doPostBack';
+
+	my $value = $element->attr('onchange')
+		// $element->attr('onclick')
+		// $element->attr('href')
+	;
+	$value =~  /$func_name\((.*)\)/;
+
+	Carp::croak "Javascript function [$func_name] for postback not found in [$value]"
+		unless $1
+	;
 
 	$1 =~ s/\\'/'/g;
 	my $args = $1;
 	my ( $eventTarget, $eventArgument ) = split /\s*,\s*/, $args;
 
-	Carp::croak 'Please submit a valid __doPostBack'
+	Carp::croak "Please submit a valid $func_name"
 		unless $eventTarget && $eventArgument
 	;
 
@@ -180,6 +189,7 @@ HTML::TreeBuilderX::ASP_NET - Scrape ASP.NET/VB.NET sites which utilize Javascri
 	});
 	my $resp = $ua->request( $aspnet->httpResponse );
 
+
 	## or the easy cheating way see the SEE ALSO section for links
 	my $aspnet = HTML::TreeBuilderX::ASP_NET->new_with_traits( traits => ['htmlElement'] );
 	$form->look_down(_tag=> 'a')->httpResponse
@@ -190,7 +200,7 @@ Scrape ASP.NET sites which utilize the language's __VIEWSTATE, __EVENTTARGET, __
 
 In this scheme many of the links on a webpage will apear to be javascript functions. The default Javascript function is C<__doPostBack(eventTarget, eventArgument)>. ASP.NET has two hidden fields which record state: __VIEWSTATE, and __LASTFOCUS. It abstracts each link with a method that utilizes an HTTP post-back to the server. The Javascript behind C<__doPostBack> simply appends __EVENTTARGET=$eventTarget&__EVENTARGUMENT=$eventArgument onto the POST request from the parent form and submits it. When the server receives this request it decodes and decompresses the __VIEWSTATE and uses it along with the new __EVENTTARGET and __EVENTARGUMENT to perform the action, which is often no more than serializing the data back into the __VIEWSTATE.
 
-Sometimes developers cloak the C<__doPostBack(target,arg)> with names akin to C<changepage(arg)> which simply call C<__doPostBack("target", arg)>. This module will handle this use case as well using the explicit an eventTriggerArugment in the constructor.
+Sometimes developers cloak the C<__doPostBack(target,arg)> with names akin to C<changepage(arg)> which simply call C<__doPostBack("target", arg)>. This module will handle this use case as well using an explicit eventTriggerArugment in the constructor. 
 
 This flow is a bane on RESTLESS http and makes no sense whatsoever. Thanks Microsoft.
 
@@ -283,9 +293,9 @@ None of these are exported...
 
 Helper function takes two values in an HashRef. Assumes the key is the __EVENTTARGET and value the __EVENTARGUMENT, returns two L<HTML::Element> pseudo-input fields with the information.
 
-=item parseDoPostBack( $str )
+=item parseDoPostBack( $str , [$optionalFunctionName] )
 
-Accepts a string that is often the "href" attribute of an HTTP::Element. It simple parses out the call to Javascript, using regexes, and makes the two args useable to perl in the form of an HashRef.
+Accepts a string, and optionally a function name to override __doPostBack, that is often the "href" attribute of an HTTP::Element. It simple parses out the call to Javascript, using regexes, and makes the two args useable to perl in the form of an HashRef.
 
 =back
 

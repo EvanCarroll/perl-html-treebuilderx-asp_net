@@ -1,5 +1,9 @@
 Revision history for HTML-TreeBuilderX-ASP_NET
 
+0.10    2009-09-17
+        Added the ability to override the default function (__doPostBack)
+        by passing '_function => "new_function"' in the constructor
+
 0.09    2009-08-26
         Fix #47300 - Caused by upstream Moose breakage
         - Solution use MX::Types
