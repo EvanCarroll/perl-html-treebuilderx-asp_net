@@ -187,11 +187,10 @@ HTML::TreeBuilderX::ASP_NET - Scrape ASP.NET/VB.NET sites which utilize Javascri
 		element   => $a
 		, baseURL =>$resp->request->uri ## takes into account posting redirects
 	});
-	my $resp = $ua->request( $aspnet->ht );
-
+	my $resp = $ua->request( $aspnet->httpRequest );
 
 	## or the easy cheating way see the SEE ALSO section for links
-	my $aspnet = HTML::TreeBuilderX::ASP_NET->new_with_traits( traits => ['htmlElement'] );
+	HTML::TreeBuilderX::ASP_NET->new_with_traits( traits => ['htmlElement'] );
 	$form->look_down(_tag=> 'a')->httpRequest
 
 =head1 DESCRIPTION
