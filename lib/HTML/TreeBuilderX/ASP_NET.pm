@@ -187,16 +187,16 @@ HTML::TreeBuilderX::ASP_NET - Scrape ASP.NET/VB.NET sites which utilize Javascri
 		element   => $a
 		, baseURL =>$resp->request->uri ## takes into account posting redirects
 	});
-	my $resp = $ua->request( $aspnet->httpResponse );
+	my $resp = $ua->request( $aspnet->ht );
 
 
 	## or the easy cheating way see the SEE ALSO section for links
 	my $aspnet = HTML::TreeBuilderX::ASP_NET->new_with_traits( traits => ['htmlElement'] );
-	$form->look_down(_tag=> 'a')->httpResponse
+	$form->look_down(_tag=> 'a')->httpRequest
 
 =head1 DESCRIPTION
 
-Scrape ASP.NET sites which utilize the language's __VIEWSTATE, __EVENTTARGET, __EVENTARGUMENT, __LASTFOCUS, et al. This module returns a HTTP::Response from the form with the use of the method C<-E<gt>httpResponse>.
+Scrape ASP.NET sites which utilize the language's __VIEWSTATE, __EVENTTARGET, __EVENTARGUMENT, __LASTFOCUS, et al. This module returns a HTTP::Request from the form with the use of the method C<-E<gt>httpRequest>.
 
 In this scheme many of the links on a webpage will apear to be javascript functions. The default Javascript function is C<__doPostBack(eventTarget, eventArgument)>. ASP.NET has two hidden fields which record state: __VIEWSTATE, and __LASTFOCUS. It abstracts each link with a method that utilizes an HTTP post-back to the server. The Javascript behind C<__doPostBack> simply appends __EVENTTARGET=$eventTarget&__EVENTARGUMENT=$eventArgument onto the POST request from the parent form and submits it. When the server receives this request it decodes and decompresses the __VIEWSTATE and uses it along with the new __EVENTTARGET and __EVENTARGUMENT to perform the action, which is often no more than serializing the data back into the __VIEWSTATE.
 
