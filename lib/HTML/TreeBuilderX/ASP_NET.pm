@@ -48,7 +48,7 @@ has 'baseURL' => ( isa => 'Maybe[URI]', is => 'ro' );
 
 has 'debug' => ( isa => 'Bool', is => 'ro', default => 0 );
 
-has '_function' => ( isa => 'Str', is => 'ro', default => '__doPostBack' );
+has 'function' => ( isa => 'Str', is => 'ro', default => '__doPostBack' );
 
 sub httpRequest {
 	my ( $self, @args ) = @_;
@@ -64,7 +64,7 @@ sub _build_eventTriggerArgument {
 		unless $self->has_element
 	;
 
-	parseDoPostBack( $self->element , $self->_function );
+	parseDoPostBack( $self->element , $self->function );
 
 }
 
@@ -128,6 +128,7 @@ sub parseDoPostBack {
 	;
 
 	$1 =~ s/\\'/'/g;
+	$1 =~ s/\\"/"/g;
 	my $args = $1;
 	my ( $eventTarget, $eventArgument ) = split /\s*,\s*/, $args;
 
@@ -135,7 +136,7 @@ sub parseDoPostBack {
 		unless $eventTarget && $eventArgument
 	;
 
-	s/^'// && s/'$// for ($eventTarget, $eventArgument);
+	s/^['"]// && s/['"]$// for ($eventTarget, $eventArgument);
 
 	return { $eventTarget, $eventArgument };
 
@@ -261,6 +262,10 @@ Not needed if you supply an element.  This takes a HashRef and will create HTML:
 =item element => $htmlElement
 
 Not needed if you send an eventTriggerArgument. Attempts to deduce the __EVENTARGUMENT and __EVENTTARGET from the 'href' attribute of the element just as if the two were supplied explicitly.  It will also be used to deduce a form by looking up in the HTML tree if one is not supplied.
+
+=item function => $str
+
+optional: function name, default as '__doPostBack', possible suggestion 'PostBackOptions'.
 
 =item debug => *0|1
 
