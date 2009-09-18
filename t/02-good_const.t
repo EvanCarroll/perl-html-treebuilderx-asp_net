@@ -91,7 +91,7 @@ eval {
 	my $input = $root->look_down( id => 'customPostBack' );
 	my $asp = HTML::TreeBuilderX::ASP_NET->new({
 		element => $input
-		, _function => 'set_search'
+		, function => 'set_search'
 	});
 
 	like (
