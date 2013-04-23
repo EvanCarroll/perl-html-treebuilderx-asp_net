@@ -4,7 +4,7 @@ use warnings;
 
 use Moose::Role;
 
-Moose::init_meta( 'HTML::Element' );
+Moose::init_meta( 'HTML::Element', for_class => 'HTML::Element' );
 
 sub BUILD {
 	my $self = shift;
