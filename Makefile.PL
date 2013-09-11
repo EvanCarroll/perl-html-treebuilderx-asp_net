@@ -13,7 +13,7 @@ requires 'HTTP::Request::Form';
 requires 'MooseX::Types' => '0.19';
 requires 'Moose' => '0.89';
 
-repository 'git@github.com:EvanCarroll/perl-html-treebuilderx-asp_net.git';
+repository 'git://github.com/EvanCarroll/perl-html-treebuilderx-asp_net.git';
 
 build_requires 'Test::More';
 
